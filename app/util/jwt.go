@@ -40,11 +40,11 @@ func VerifyToken(tokenString string) (string, error) {
 	})
 
 	if err != nil {
-		return "", errors.New("internal")
+		return "", errors.New(ErrInvalidToken)
 	}
 
 	if !token.Valid {
-		return "", errors.New("invalid token")
+		return "", errors.New(ErrInvalidToken)
 	}
 
 	// type-assert `Claims` into a variable of the appropriate type

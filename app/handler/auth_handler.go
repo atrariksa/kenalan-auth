@@ -12,6 +12,7 @@ import (
 	"github.com/atrariksa/kenalan-auth/app/service"
 	"github.com/atrariksa/kenalan-auth/app/util"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 type authServiceServer struct {
@@ -27,12 +28,12 @@ func GetAuthServiceServer(svc service.IAuthService) *authServiceServer {
 
 func (s authServiceServer) GetToken(ctx context.Context, req *pb.GetTokenRequest) (*pb.GetTokenResponse, error) {
 	if req.Email == "" {
-		return nil, errors.New("invalid email")
+		return nil, status.Error(util.CodeInvalidEmail, util.ErrInvalidEmail)
 	}
 
 	token, err := s.authService.GenerateToken(ctx, req.Email)
 	if err != nil {
-		return nil, errors.New("internal error")
+		return nil, errors.New(util.ErrInternalError)
 	}
 
 	response := pb.GetTokenResponse{
@@ -45,12 +46,15 @@ func (s authServiceServer) GetToken(ctx context.Context, req *pb.GetTokenRequest
 
 func (s authServiceServer) IsTokenValid(ctx context.Context, req *pb.IsTokenValidRequest) (*pb.IsTokenValidResponse, error) {
 	if req.Token == "" {
-		return nil, errors.New("invalid token")
+		return nil, status.Error(util.CodeInvalidToken, util.ErrInvalidToken)
 	}
 
 	isTokenValid, email, err := s.authService.ValidateToken(ctx, req.Token)
 	if err != nil {
-		return nil, errors.New("internal error")
+		if err.Error() == util.ErrInvalidToken {
+			return nil, status.Error(util.CodeInvalidToken, util.ErrInvalidToken)
+		}
+		return nil, errors.New(util.ErrInternalError)
 	}
 
 	response := pb.IsTokenValidResponse{

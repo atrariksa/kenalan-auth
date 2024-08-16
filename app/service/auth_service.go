@@ -32,13 +32,13 @@ func (as *AuthService) GenerateToken(ctx context.Context, email string) (string,
 	token, err := util.GenerateToken(email)
 	if err != nil {
 		log.Println(err)
-		return "", errors.New("internal error")
+		return "", errors.New(util.ErrInternalError)
 	}
 
 	err = as.Repo.StoreToken(ctx, fmt.Sprintf(tokenKey, email), token)
 	if err != nil {
 		log.Println(err)
-		return "", errors.New("internal error")
+		return "", errors.New(util.ErrInternalError)
 	}
 
 	return token, nil
@@ -47,6 +47,9 @@ func (as *AuthService) GenerateToken(ctx context.Context, email string) (string,
 func (as *AuthService) ValidateToken(ctx context.Context, token string) (bool, string, error) {
 	email, err := util.VerifyToken(token)
 	if err != nil {
+		if err.Error() == util.ErrInvalidToken {
+			return false, "", err
+		}
 		log.Println(err)
 		return false, "", err
 	}
@@ -54,11 +57,12 @@ func (as *AuthService) ValidateToken(ctx context.Context, token string) (bool, s
 	tokenFromRedis, err := as.Repo.GetToken(ctx, fmt.Sprintf(tokenKey, email))
 	if err != nil && err != redis.Nil {
 		log.Println(err)
-		return false, "", err
+		return false, "", errors.New(util.ErrInternalError)
 	}
 
 	if token != tokenFromRedis {
-		return false, "", errors.New("invalid token")
+		return false, "", errors.New(util.ErrInvalidToken)
 	}
+
 	return true, email, nil
 }
