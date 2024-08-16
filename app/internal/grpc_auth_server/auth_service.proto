@@ -1,0 +1,27 @@
+syntax = "proto3";
+option go_package = "github.com/atrariksa/kenalan-auth/app/internal/grpc_auth_server";
+package grpc_client;
+
+service AuthService {
+  rpc GetToken(GetTokenRequest) returns (GetTokenResponse) {}
+  rpc IsTokenValid(IsTokenValidRequest) returns (IsTokenValidResponse) {}
+}
+
+message GetTokenRequest {
+  string email = 1;
+}
+
+message GetTokenResponse {
+  int64 code = 1;
+  string token = 2;
+}
+
+message IsTokenValidRequest {
+  string token = 1;
+}
+
+message IsTokenValidResponse {
+  int64 code = 1;
+  bool is_token_valid = 2;
+  string email = 3;
+}
