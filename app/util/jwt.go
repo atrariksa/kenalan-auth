@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var TokenDuration = time.Second * 24 * 7
+var TokenDuration = time.Hour * 24 * 7
 
 type claims struct {
 	jwt.StandardClaims
