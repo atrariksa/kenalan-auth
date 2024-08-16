@@ -8,6 +8,7 @@ import (
 
 	"github.com/atrariksa/kenalan-auth/app/repository"
 	"github.com/atrariksa/kenalan-auth/app/util"
+	"github.com/redis/go-redis/v9"
 )
 
 var tokenKey = "token:%s"
@@ -51,7 +52,7 @@ func (as *AuthService) ValidateToken(ctx context.Context, token string) (bool, s
 	}
 
 	tokenFromRedis, err := as.Repo.GetToken(ctx, fmt.Sprintf(tokenKey, email))
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		log.Println(err)
 		return false, "", err
 	}

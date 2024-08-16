@@ -31,19 +31,6 @@ func GenerateToken(email string) (string, error) {
 }
 
 func VerifyToken(tokenString string) (string, error) {
-	// token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-	// 	return []byte("secretKey"), nil
-	// })
-
-	// if err != nil {
-	// 	return "", err
-	// }
-
-	// if !token.Valid {
-	// 	return "", fmt.Errorf("invalid token")
-	// }
-
-	// return token.Claims, nil
 
 	token, err := jwt.ParseWithClaims(tokenString, &claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
