@@ -11,6 +11,7 @@ import (
 	"github.com/atrariksa/kenalan-auth/app/repository"
 	"github.com/atrariksa/kenalan-auth/app/service"
 	"github.com/atrariksa/kenalan-auth/app/util"
+	"github.com/atrariksa/kenalan-auth/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
@@ -67,12 +68,14 @@ func (s authServiceServer) IsTokenValid(ctx context.Context, req *pb.IsTokenVali
 
 func SetupServer() {
 	fmt.Println("---Auth Service---")
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 6022))
+
+	cfg := config.GetConfig()
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.ServerConfig.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	rc := util.GetRedisClient()
+	rc := util.GetRedisClient(cfg)
 	authRepo := repository.NewAuthRepository(rc)
 	authService := service.NewAuthService(authRepo)
 

@@ -1,14 +1,15 @@
 package util
 
 import (
+	"github.com/atrariksa/kenalan-auth/config"
 	"github.com/redis/go-redis/v9"
 )
 
-func GetRedisClient() *redis.Client {
+func GetRedisClient(cfg *config.Config) *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     cfg.RedisConfig.Address,
+		Password: cfg.RedisConfig.Password,
+		DB:       cfg.RedisConfig.DB,
 	})
 	return client
 }

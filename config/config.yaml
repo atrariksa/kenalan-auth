@@ -1,0 +1,8 @@
+server:
+  host: ""
+  port: 6022
+
+redis:
+  address: "localhost:6379"
+  password: ""
+  db: 0
